@@ -12,20 +12,40 @@ import {
   Users,
   ChevronDown,
   ChevronUp,
-  Zap
+  Zap,
+  Truck
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import EditAuctionModal from "./EditAuctionModal";
 import BidderHistoryList from "./BidderHistoryList";
 import BoostAuctionModal from "./BoostAuctionModal";
+import AddShipmentModal from "../shipping/AddShipmentModal";
+import UpdateShipmentModal from "../shipping/UpdateShipmentModal";
+import ShippingStatusBadge from "../shipping/ShippingStatusBadge";
 import { base44 } from "@/api/base44Client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export default function SellerAuctionCard({ auction, bids, onUpdate }) {
   const [showBids, setShowBids] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showBoostModal, setShowBoostModal] = useState(false);
+  const [showAddShipment, setShowAddShipment] = useState(false);
+  const [showUpdateShipment, setShowUpdateShipment] = useState(false);
+  const queryClient = useQueryClient();
+
+  const isEnded = !auction.status !== 'cancelled' && (auction.status === 'ended' || new Date(auction.end_time) <= new Date());
+  const hasWinner = !!auction.current_bidder;
+
+  const { data: shipments = [] } = useQuery({
+    queryKey: ['shipment', auction.id],
+    queryFn: () => base44.entities.Shipment.filter({ auction_id: auction.id }),
+    enabled: isEnded && hasWinner,
+  });
+  const shipment = shipments[0];
+
+  const refreshShipment = () => queryClient.invalidateQueries({ queryKey: ['shipment', auction.id] });
 
   const isBoosted = auction.is_boosted && auction.boost_expires_at && new Date(auction.boost_expires_at) > new Date();
 
@@ -112,6 +132,9 @@ export default function SellerAuctionCard({ auction, bids, onUpdate }) {
                       {auction.boost_tier === 'premium' ? '👑 Premium' : auction.boost_tier === 'featured' ? '⭐ Featured' : '⚡ Boosted'}
                     </Badge>
                   )}
+                  {isEnded && hasWinner && shipment && (
+                    <ShippingStatusBadge status={shipment.status} />
+                  )}
                 </div>
               </div>
 
@@ -162,15 +185,40 @@ export default function SellerAuctionCard({ auction, bids, onUpdate }) {
                   )}
 
                   {!isActive && auction.status !== 'cancelled' && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleRelist}
-                      className="bg-amber-900/20 border-amber-700/50 text-amber-300 hover:bg-amber-900/40"
-                    >
-                      <RotateCcw className="w-4 h-4 mr-1" />
-                      Relist
-                    </Button>
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleRelist}
+                        className="bg-amber-900/20 border-amber-700/50 text-amber-300 hover:bg-amber-900/40"
+                      >
+                        <RotateCcw className="w-4 h-4 mr-1" />
+                        Relist
+                      </Button>
+                      {hasWinner && (
+                        shipment ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowUpdateShipment(true)}
+                            className="bg-blue-900/20 border-blue-700/50 text-blue-300 hover:bg-blue-900/40"
+                          >
+                            <Truck className="w-4 h-4 mr-1" />
+                            Update Shipping
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowAddShipment(true)}
+                            className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-blue-900/20 hover:border-blue-700/50 hover:text-blue-300"
+                          >
+                            <Truck className="w-4 h-4 mr-1" />
+                            Add Tracking
+                          </Button>
+                        )
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -250,6 +298,21 @@ export default function SellerAuctionCard({ auction, bids, onUpdate }) {
         auction={auction}
         onSuccess={onUpdate}
       />
+      <AddShipmentModal
+        open={showAddShipment}
+        onOpenChange={setShowAddShipment}
+        auction={auction}
+        sellerEmail={auction.created_by}
+        onSuccess={refreshShipment}
+      />
+      {shipment && (
+        <UpdateShipmentModal
+          open={showUpdateShipment}
+          onOpenChange={setShowUpdateShipment}
+          shipment={shipment}
+          onSuccess={refreshShipment}
+        />
+      )}
     </>
   );
 }

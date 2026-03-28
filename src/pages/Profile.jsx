@@ -11,6 +11,7 @@ import MyAuctionsList from "../components/profile/MyAuctionsList";
 import MyBidsList from "../components/profile/MyBidsList";
 import WatchlistSection from "../components/profile/WatchlistSection";
 import FollowedSellers from "../components/profile/FollowedSellers";
+import WonItemCard from "../components/profile/WonItemCard";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -213,7 +214,15 @@ export default function Profile() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <MyBidsList bidsWithAuctions={wonItems} />
+                {wonItems.length === 0 ? (
+                  <div className="text-center py-10 text-slate-400">No won items yet</div>
+                ) : (
+                  <div className="space-y-3">
+                    {wonItems.map((item, index) => (
+                      <WonItemCard key={item.bid.id} item={item} index={index} />
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

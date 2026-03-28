@@ -1,0 +1,60 @@
+{
+  "name": "Shipment",
+  "type": "object",
+  "properties": {
+    "auction_id": {
+      "type": "string",
+      "description": "ID of the auction this shipment is for"
+    },
+    "buyer_email": {
+      "type": "string",
+      "description": "Email of the buyer"
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "Email of the seller"
+    },
+    "tracking_number": {
+      "type": "string",
+      "description": "Carrier tracking number"
+    },
+    "carrier": {
+      "type": "string",
+      "enum": [
+        "UPS",
+        "FedEx",
+        "USPS",
+        "DHL",
+        "Other"
+      ],
+      "description": "Shipping carrier"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "label_created",
+        "shipped",
+        "in_transit",
+        "out_for_delivery",
+        "delivered"
+      ],
+      "default": "pending",
+      "description": "Current shipment status"
+    },
+    "estimated_delivery": {
+      "type": "string",
+      "format": "date",
+      "description": "Estimated delivery date"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes from seller"
+    }
+  },
+  "required": [
+    "auction_id",
+    "buyer_email",
+    "seller_email"
+  ]
+}
