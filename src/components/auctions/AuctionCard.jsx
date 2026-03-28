@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Gavel, User } from "lucide-react";
+import { Clock, Gavel, User, Zap, Star, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
@@ -19,9 +19,18 @@ const categoryColors = {
   other: "bg-gray-500/20 text-gray-300 border-gray-500/30"
 };
 
+const boostStyles = {
+  premium: { icon: Crown, label: "Premium", className: "bg-purple-600/90 text-white" },
+  featured: { icon: Star, label: "Featured", className: "bg-amber-500/90 text-white" },
+  basic: { icon: Zap, label: "Boosted", className: "bg-blue-500/90 text-white" }
+};
+
 export default function AuctionCard({ auction, index = 0 }) {
   const [timeLeft, setTimeLeft] = useState("");
   const [isEnded, setIsEnded] = useState(false);
+
+  const isBoosted = auction.is_boosted && auction.boost_expires_at && new Date(auction.boost_expires_at) > new Date();
+  const boostStyle = isBoosted ? boostStyles[auction.boost_tier] || boostStyles.basic : null;
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -61,7 +70,13 @@ export default function AuctionCard({ auction, index = 0 }) {
       transition={{ duration: 0.4, delay: index * 0.1 }}
     >
       <Link to={createPageUrl("AuctionDetail") + `?id=${auction.id}`}>
-        <Card className="group bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50 overflow-hidden hover:border-amber-500/50 transition-all duration-500 hover:shadow-2xl hover:shadow-amber-500/10">
+        <Card className={`group bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden transition-all duration-500 hover:shadow-2xl ${
+          isBoosted && auction.boost_tier === 'premium'
+            ? 'border-2 border-purple-500/60 hover:border-purple-400 hover:shadow-purple-500/20'
+            : isBoosted && auction.boost_tier === 'featured'
+            ? 'border-2 border-amber-500/60 hover:border-amber-400 hover:shadow-amber-500/20'
+            : 'border-slate-700/50 hover:border-amber-500/50 hover:shadow-amber-500/10'
+        }`}>
           <div className="relative aspect-[4/3] overflow-hidden">
             <img
               src={auction.image_url || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"}
@@ -70,10 +85,16 @@ export default function AuctionCard({ auction, index = 0 }) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
             
-            <div className="absolute top-3 left-3">
+            <div className="absolute top-3 left-3 flex flex-col gap-1.5">
               <Badge className={`${categoryColors[auction.category] || categoryColors.other} border backdrop-blur-sm`}>
                 {auction.category?.replace(/_/g, ' ')}
               </Badge>
+              {boostStyle && (
+                <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${boostStyle.className}`}>
+                  <boostStyle.icon className="w-3 h-3" />
+                  {boostStyle.label}
+                </span>
+              )}
             </div>
 
             <div className={`absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-md ${

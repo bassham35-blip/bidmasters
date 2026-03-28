@@ -1,0 +1,95 @@
+{
+  "name": "Auction",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the auction item"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the item"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Main image of the item"
+    },
+    "starting_price": {
+      "type": "number",
+      "description": "Starting bid price"
+    },
+    "current_bid": {
+      "type": "number",
+      "description": "Current highest bid"
+    },
+    "current_bidder": {
+      "type": "string",
+      "description": "Email of current highest bidder"
+    },
+    "current_bidder_name": {
+      "type": "string",
+      "description": "Name of current highest bidder"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the auction ends"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "ended",
+        "cancelled"
+      ],
+      "default": "active"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "electronics",
+        "fashion",
+        "art",
+        "collectibles",
+        "home",
+        "vehicles",
+        "jewelry",
+        "sports",
+        "other"
+      ],
+      "default": "other"
+    },
+    "seller_name": {
+      "type": "string",
+      "description": "Name of the seller"
+    },
+    "bid_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_boosted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the auction is currently boosted/promoted"
+    },
+    "boost_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the current boost expires"
+    },
+    "boost_tier": {
+      "type": "string",
+      "enum": [
+        "basic",
+        "featured",
+        "premium"
+      ],
+      "description": "The boost tier applied"
+    }
+  },
+  "required": [
+    "title",
+    "starting_price",
+    "end_time"
+  ]
+}

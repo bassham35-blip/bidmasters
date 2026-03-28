@@ -82,6 +82,14 @@ export default function Auctions() {
       const aTime = new Date(a.end_time).getTime();
       const bTime = new Date(b.end_time).getTime();
 
+      // Always show boosted items first (if not actively sorting by something else)
+      const aIsBoosted = a.is_boosted && a.boost_expires_at && new Date(a.boost_expires_at) > new Date();
+      const bIsBoosted = b.is_boosted && b.boost_expires_at && new Date(b.boost_expires_at) > new Date();
+      if (sortBy === "ending_soon" || sortBy === "newly_listed") {
+        if (aIsBoosted && !bIsBoosted) return -1;
+        if (!aIsBoosted && bIsBoosted) return 1;
+      }
+
       switch (sortBy) {
         case "ending_soon":
           return aTime - bTime;

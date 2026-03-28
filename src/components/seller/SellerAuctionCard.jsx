@@ -11,18 +11,23 @@ import {
   RotateCcw,
   Users,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Zap
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import EditAuctionModal from "./EditAuctionModal";
 import BidderHistoryList from "./BidderHistoryList";
+import BoostAuctionModal from "./BoostAuctionModal";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
 export default function SellerAuctionCard({ auction, bids, onUpdate }) {
   const [showBids, setShowBids] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showBoostModal, setShowBoostModal] = useState(false);
+
+  const isBoosted = auction.is_boosted && auction.boost_expires_at && new Date(auction.boost_expires_at) > new Date();
 
   const isActive = auction.status === 'active' && new Date(auction.end_time) > new Date();
   const hasBids = (auction.bid_count || 0) > 0;
@@ -83,25 +88,45 @@ export default function SellerAuctionCard({ auction, bids, onUpdate }) {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-2">{auction.title}</h3>
-                  <div className="flex items-center gap-3">
-                    <Badge className={`${
-                      isActive 
-                        ? 'bg-green-500/20 text-green-300 border-green-500/30' 
-                        : auction.status === 'cancelled'
-                        ? 'bg-red-500/20 text-red-300 border-red-500/30'
-                        : 'bg-slate-500/20 text-slate-300 border-slate-500/30'
-                    } border`}>
-                      {auction.status === 'cancelled' ? 'Cancelled' : isActive ? 'Active' : 'Ended'}
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">{auction.title}</h3>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Badge className={`${
+                    isActive 
+                      ? 'bg-green-500/20 text-green-300 border-green-500/30' 
+                      : auction.status === 'cancelled'
+                      ? 'bg-red-500/20 text-red-300 border-red-500/30'
+                      : 'bg-slate-500/20 text-slate-300 border-slate-500/30'
+                  } border`}>
+                    {auction.status === 'cancelled' ? 'Cancelled' : isActive ? 'Active' : 'Ended'}
+                  </Badge>
+                  <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 border">
+                    {auction.category?.replace(/_/g, ' ')}
+                  </Badge>
+                  {isBoosted && (
+                    <Badge className={`border ${
+                      auction.boost_tier === 'premium' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
+                      auction.boost_tier === 'featured' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
+                      'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                    }`}>
+                      {auction.boost_tier === 'premium' ? '👑 Premium' : auction.boost_tier === 'featured' ? '⭐ Featured' : '⚡ Boosted'}
                     </Badge>
-                    <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 border">
-                      {auction.category?.replace(/_/g, ' ')}
-                    </Badge>
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap justify-end">
+                  {isActive && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowBoostModal(true)}
+                      className={`${isBoosted ? 'bg-amber-900/20 border-amber-700/50 text-amber-300' : 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-amber-900/20 hover:border-amber-700/50 hover:text-amber-300'}`}
+                    >
+                      <Zap className="w-4 h-4 mr-1" />
+                      {isBoosted ? 'Boosted' : 'Boost'}
+                    </Button>
+                  )}
                   {canEdit && (
                     <Button
                       variant="outline"
@@ -216,6 +241,12 @@ export default function SellerAuctionCard({ auction, bids, onUpdate }) {
       <EditAuctionModal
         open={showEditModal}
         onOpenChange={setShowEditModal}
+        auction={auction}
+        onSuccess={onUpdate}
+      />
+      <BoostAuctionModal
+        open={showBoostModal}
+        onOpenChange={setShowBoostModal}
         auction={auction}
         onSuccess={onUpdate}
       />
