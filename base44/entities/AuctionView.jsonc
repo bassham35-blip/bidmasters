@@ -1,0 +1,31 @@
+{
+  "name": "AuctionView",
+  "type": "object",
+  "properties": {
+    "auction_id": {
+      "type": "string",
+      "description": "ID of the auction viewed"
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "Email of the auction seller"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category of the auction"
+    },
+    "viewer_email": {
+      "type": "string",
+      "description": "Email of the viewer (if authenticated)"
+    },
+    "clicked_bid": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the viewer clicked to place a bid"
+    }
+  },
+  "required": [
+    "auction_id",
+    "seller_email"
+  ]
+}

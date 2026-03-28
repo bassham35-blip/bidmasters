@@ -50,6 +50,17 @@ export default function AuctionDetail() {
     base44.auth.me().then(setUser).catch(() => setUser(null));
   }, []);
 
+  // Track view when auction loads
+  useEffect(() => {
+    if (!auction) return;
+    base44.functions.invoke('trackAuctionView', {
+      auction_id: auction.id,
+      seller_email: auction.created_by,
+      category: auction.category,
+      clicked_bid: false,
+    }).catch(() => {});
+  }, [auction?.id]);
+
   const { data: auction, isLoading } = useQuery({
     queryKey: ['auction', auctionId],
     queryFn: () => base44.entities.Auction.filter({ id: auctionId }).then(res => res[0]),
@@ -134,6 +145,13 @@ export default function AuctionDetail() {
       return;
     }
 
+    // Track bid click-through
+    base44.functions.invoke('trackAuctionView', {
+      auction_id: auctionId,
+      seller_email: auction?.created_by,
+      category: auction?.category,
+      clicked_bid: true,
+    }).catch(() => {});
     placeBidMutation.mutate(amount);
   };
 

@@ -3,10 +3,11 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Store, TrendingUp, CheckCircle, DollarSign } from "lucide-react";
+import { Store, TrendingUp, CheckCircle, DollarSign, BarChart2 } from "lucide-react";
 import SellerStats from "../components/seller/SellerStats";
 import SellerAuctionCard from "../components/seller/SellerAuctionCard";
 import SellerGate from "../components/seller/SellerGate";
+import SellerAnalytics from "../components/seller/SellerAnalytics";
 
 export default function SellerDashboard() {
   const [user, setUser] = useState(null);
@@ -93,6 +94,13 @@ export default function SellerDashboard() {
             >
               Ended Auctions ({endedAuctions.length})
             </TabsTrigger>
+            <TabsTrigger 
+              value="analytics"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white"
+            >
+              <BarChart2 className="w-4 h-4 mr-1" />
+              Analytics
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="active">
@@ -133,6 +141,10 @@ export default function SellerDashboard() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <SellerAnalytics sellerEmail={user.email} auctions={myAuctions} />
           </TabsContent>
         </Tabs>
       </div>
