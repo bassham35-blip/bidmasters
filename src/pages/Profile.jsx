@@ -3,8 +3,9 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Store, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import AuctionStats from "../components/profile/AuctionStats";
 import MyAuctionsList from "../components/profile/MyAuctionsList";
 import MyBidsList from "../components/profile/MyBidsList";
@@ -103,7 +104,7 @@ export default function Profile() {
                 <div>
                   <h1 className="text-3xl font-bold text-white mb-2">{user.full_name}</h1>
                   <p className="text-slate-400">{user.email}</p>
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       user.role === 'admin' 
                         ? 'bg-purple-500/20 text-purple-300' 
@@ -111,6 +112,18 @@ export default function Profile() {
                     }`}>
                       {user.role === 'admin' ? '👑 Admin' : 'User'}
                     </span>
+                    {user.is_seller ? (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        🏪 Seller — {user.store_name}
+                      </span>
+                    ) : (
+                      <Link to="/SellerOnboarding">
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-slate-700 text-slate-400 hover:bg-amber-500/20 hover:text-amber-300 border border-slate-600 hover:border-amber-500/30 transition-all cursor-pointer flex items-center gap-1">
+                          <Store className="w-3 h-3" />
+                          Become a Seller
+                        </span>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

@@ -2,6 +2,8 @@ import Profile from './pages/Profile';
 import SellerDashboard from './pages/SellerDashboard';
 import Auctions from './pages/Auctions';
 import AuctionDetail from './pages/AuctionDetail';
+import SellerOnboarding from './pages/SellerOnboarding';
+import Layout from './components/Layout';
 
 
 export const PAGES = {
@@ -9,9 +11,11 @@ export const PAGES = {
     "SellerDashboard": SellerDashboard,
     "Auctions": Auctions,
     "AuctionDetail": AuctionDetail,
+    "SellerOnboarding": SellerOnboarding,
 }
 
 export const pagesConfig = {
-    mainPage: "Profile",
+    mainPage: "Auctions",
     Pages: PAGES,
+    Layout: Layout,
 };

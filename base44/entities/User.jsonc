@@ -1,0 +1,48 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "is_seller": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has registered as a seller"
+    },
+    "store_name": {
+      "type": "string",
+      "description": "Seller's store or brand name"
+    },
+    "store_description": {
+      "type": "string",
+      "description": "Short bio / description of the store"
+    },
+    "seller_since": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user became a seller"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Contact phone number"
+    },
+    "location": {
+      "type": "string",
+      "description": "City / country"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profile picture URL"
+    },
+    "accepted_terms": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

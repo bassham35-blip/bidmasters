@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Store, TrendingUp, CheckCircle, DollarSign } from "lucide-react";
 import SellerStats from "../components/seller/SellerStats";
 import SellerAuctionCard from "../components/seller/SellerAuctionCard";
+import SellerGate from "../components/seller/SellerGate";
 
 export default function SellerDashboard() {
   const [user, setUser] = useState(null);
@@ -48,6 +49,10 @@ export default function SellerDashboard() {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
       </div>
     );
+  }
+
+  if (!user.is_seller) {
+    return <SellerGate />;
   }
 
   return (
