@@ -6,6 +6,7 @@ import { Clock, Gavel, User, Zap, Star, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
+import FollowSellerButton from "./FollowSellerButton";
 
 const categoryColors = {
   electronics: "bg-blue-500/20 text-blue-300 border-blue-500/30",
@@ -25,7 +26,7 @@ const boostStyles = {
   basic: { icon: Zap, label: "Boosted", className: "bg-blue-500/90 text-white" }
 };
 
-export default function AuctionCard({ auction, index = 0 }) {
+export default function AuctionCard({ auction, index = 0, currentUserEmail }) {
   const [timeLeft, setTimeLeft] = useState("");
   const [isEnded, setIsEnded] = useState(false);
 
@@ -106,9 +107,18 @@ export default function AuctionCard({ auction, index = 0 }) {
 
             <div className="absolute bottom-3 left-3 right-3">
               <h3 className="text-white font-semibold text-lg truncate mb-1">{auction.title}</h3>
-              <div className="flex items-center gap-2 text-slate-400 text-sm">
-                <User className="w-3.5 h-3.5" />
-                <span className="truncate">{auction.seller_name || "Anonymous"}</span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-slate-400 text-sm min-w-0">
+                  <User className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="truncate">{auction.seller_name || "Anonymous"}</span>
+                </div>
+                {currentUserEmail && (
+                  <FollowSellerButton
+                    sellerEmail={auction.created_by}
+                    sellerName={auction.seller_name}
+                    currentUserEmail={currentUserEmail}
+                  />
+                )}
               </div>
             </div>
           </div>

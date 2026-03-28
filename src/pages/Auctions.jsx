@@ -210,7 +210,7 @@ export default function Auctions() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAuctions.map((auction, index) => (
-                <AuctionCard key={auction.id} auction={auction} index={index} />
+                <AuctionCard key={auction.id} auction={auction} index={index} currentUserEmail={user?.email} />
               ))}
             </div>
           </>

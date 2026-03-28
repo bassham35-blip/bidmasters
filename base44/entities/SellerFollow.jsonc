@@ -1,0 +1,22 @@
+{
+  "name": "SellerFollow",
+  "type": "object",
+  "properties": {
+    "follower_email": {
+      "type": "string",
+      "description": "Email of the user following"
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "Email of the seller being followed"
+    },
+    "seller_name": {
+      "type": "string",
+      "description": "Store name of the seller"
+    }
+  },
+  "required": [
+    "follower_email",
+    "seller_email"
+  ]
+}

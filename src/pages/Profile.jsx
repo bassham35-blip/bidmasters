@@ -10,6 +10,7 @@ import AuctionStats from "../components/profile/AuctionStats";
 import MyAuctionsList from "../components/profile/MyAuctionsList";
 import MyBidsList from "../components/profile/MyBidsList";
 import WatchlistSection from "../components/profile/WatchlistSection";
+import FollowedSellers from "../components/profile/FollowedSellers";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -173,6 +174,12 @@ export default function Profile() {
             >
               Watchlist
             </TabsTrigger>
+            <TabsTrigger 
+              value="following"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white"
+            >
+              Following
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="auctions">
@@ -223,6 +230,17 @@ export default function Profile() {
                     refetchWatchlist();
                   }}
                 />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="following">
+            <Card className="bg-slate-900/50 border-slate-700/50">
+              <CardHeader>
+                <CardTitle className="text-white">Sellers I Follow</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FollowedSellers userEmail={user?.email} />
               </CardContent>
             </Card>
           </TabsContent>
