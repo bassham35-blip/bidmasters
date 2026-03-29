@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { base44 } from "@/api/base44Client";
-import { Upload, Loader2, Clock } from "lucide-react";
+import { Upload, Loader2, Clock, X, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
 const categories = [
@@ -24,6 +24,7 @@ const categories = [
 export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -35,14 +36,23 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
     start_time: ""
   });
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
+  const uploadFile = async (file) => {
+    if (!file || !file.type.startsWith('image/')) {
+      toast.error('Please select a valid image file.');
+      return;
+    }
     setIsUploading(true);
     const result = await base44.integrations.Core.UploadFile({ file });
     setFormData(prev => ({ ...prev, image_url: result.file_url }));
     setIsUploading(false);
+  };
+
+  const handleImageUpload = (e) => uploadFile(e.target.files[0]);
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    uploadFile(e.dataTransfer.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -117,29 +127,53 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
 
           <div className="space-y-2">
             <Label className="text-slate-300">Item Image</Label>
-            <div className="flex gap-3">
-              <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 border border-dashed border-slate-600 rounded-lg cursor-pointer hover:border-amber-500 transition-colors">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                {isUploading ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
-                ) : (
-                  <Upload className="w-5 h-5 text-slate-400" />
-                )}
-                <span className="text-slate-400 text-sm">
-                  {formData.image_url ? "Change image" : "Upload image"}
-                </span>
-              </label>
-              {formData.image_url && (
-                <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-700">
-                  <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+            {formData.image_url ? (
+              <div className="relative rounded-xl overflow-hidden border border-slate-700 group">
+                <img src={formData.image_url} alt="Preview" className="w-full h-48 object-cover" />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                  <label className="cursor-pointer flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors">
+                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                    <Upload className="w-4 h-4" /> Replace
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, image_url: "" }))}
+                    className="flex items-center gap-1.5 bg-red-500/80 hover:bg-red-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    <X className="w-4 h-4" /> Remove
+                  </button>
                 </div>
-              )}
-            </div>
+                {isUploading && (
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <label
+                className={`flex flex-col items-center justify-center gap-3 w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
+                  isDragging ? 'border-amber-500 bg-amber-500/10' : 'border-slate-600 bg-slate-800 hover:border-amber-500 hover:bg-slate-700/50'
+                }`}
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+              >
+                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                {isUploading ? (
+                  <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+                ) : (
+                  <>
+                    <div className="w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center">
+                      <ImageIcon className="w-6 h-6 text-slate-400" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-slate-300 text-sm font-medium">Drop image here or <span className="text-amber-400">browse</span></p>
+                      <p className="text-slate-500 text-xs mt-1">PNG, JPG, WEBP up to 10MB</p>
+                    </div>
+                  </>
+                )}
+              </label>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
