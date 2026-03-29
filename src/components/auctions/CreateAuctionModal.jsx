@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { base44 } from "@/api/base44Client";
-import { Upload, Loader2, Image as ImageIcon } from "lucide-react";
+import { Upload, Loader2, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 const categories = [
@@ -30,7 +30,9 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
     image_url: "",
     starting_price: "",
     category: "other",
-    duration: "24"
+    duration: "24",
+    startType: "now",
+    start_time: ""
   });
 
   const handleImageUpload = async (e) => {
@@ -47,7 +49,9 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
     e.preventDefault();
     setIsSubmitting(true);
 
-    const endTime = new Date();
+    const isScheduled = formData.startType === "scheduled" && formData.start_time;
+    const startTime = isScheduled ? new Date(formData.start_time) : new Date();
+    const endTime = new Date(startTime);
     endTime.setHours(endTime.getHours() + parseInt(formData.duration));
 
     await base44.entities.Auction.create({
@@ -57,8 +61,9 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
       starting_price: parseFloat(formData.starting_price),
       current_bid: parseFloat(formData.starting_price),
       category: formData.category,
+      start_time: isScheduled ? startTime.toISOString() : null,
       end_time: endTime.toISOString(),
-      status: "active",
+      status: isScheduled ? "scheduled" : "active",
       seller_name: user?.full_name || "Anonymous",
       bid_count: 0
     });
@@ -70,7 +75,9 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
       image_url: "",
       starting_price: "",
       category: "other",
-      duration: "24"
+      duration: "24",
+      startType: "now",
+      start_time: ""
     });
     setIsSubmitting(false);
     onOpenChange(false);
@@ -191,9 +198,45 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
             </Select>
           </div>
 
+          <div className="space-y-2">
+            <Label className="text-slate-300">Start Time</Label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, startType: "now" }))}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border ${formData.startType === "now" ? "bg-amber-500 border-amber-500 text-white" : "bg-slate-800 border-slate-700 text-slate-300 hover:border-amber-500"}`}
+              >
+                Go Live Now
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, startType: "scheduled" }))}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors border ${formData.startType === "scheduled" ? "bg-amber-500 border-amber-500 text-white" : "bg-slate-800 border-slate-700 text-slate-300 hover:border-amber-500"}`}
+              >
+                <Clock className="w-3.5 h-3.5 inline mr-1" />
+                Schedule
+              </button>
+            </div>
+            {formData.startType === "scheduled" && (
+              <Input
+                type="datetime-local"
+                min={new Date().toISOString().slice(0, 16)}
+                value={formData.start_time}
+                onChange={(e) => setFormData(prev => ({ ...prev, start_time: e.target.value }))}
+                className="bg-slate-800 border-slate-700 text-white focus:border-amber-500"
+                required
+              />
+            )}
+            {formData.startType === "scheduled" && formData.start_time && (
+              <p className="text-xs text-slate-400">
+                Auction will go live on {new Date(formData.start_time).toLocaleString()} and run for {formData.duration} hours.
+              </p>
+            )}
+          </div>
+
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || (formData.startType === "scheduled" && !formData.start_time)}
             className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-6"
           >
             {isSubmitting ? (

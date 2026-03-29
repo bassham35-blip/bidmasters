@@ -30,6 +30,11 @@
       "type": "string",
       "description": "Name of current highest bidder"
     },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the auction goes live (null = immediately)"
+    },
     "end_time": {
       "type": "string",
       "format": "date-time",
@@ -38,6 +43,7 @@
     "status": {
       "type": "string",
       "enum": [
+        "scheduled",
         "active",
         "ended",
         "cancelled",
