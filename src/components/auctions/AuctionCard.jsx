@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 import FollowSellerButton from "./FollowSellerButton";
+import WatchlistButton from "./WatchlistButton";
 
 const categoryColors = {
   electronics: "bg-blue-500/20 text-blue-300 border-blue-500/30",
@@ -98,11 +99,16 @@ export default function AuctionCard({ auction, index = 0, currentUserEmail }) {
               )}
             </div>
 
-            <div className={`absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-md ${
-              isEnded ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'
-            }`}>
-              <Clock className="w-3.5 h-3.5" />
-              <span className="text-xs font-medium">{timeLeft}</span>
+            <div className="absolute top-3 right-3 flex items-center gap-2">
+              {currentUserEmail && (
+                <WatchlistButton auctionId={auction.id} user={{ email: currentUserEmail }} />
+              )}
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-md ${
+                isEnded ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'
+              }`}>
+                <Clock className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">{timeLeft}</span>
+              </div>
             </div>
 
             <div className="absolute bottom-3 left-3 right-3">

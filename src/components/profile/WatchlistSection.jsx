@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Clock, DollarSign, X } from "lucide-react";
+import { Heart, Clock, DollarSign, X } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -14,8 +14,9 @@ export default function WatchlistSection({ watchlistItems, onRemove }) {
   if (!watchlistItems || watchlistItems.length === 0) {
     return (
       <Card className="bg-slate-800/50 border-slate-700/50 p-8 text-center">
-        <Eye className="w-12 h-12 mx-auto mb-4 text-slate-600" />
+        <Heart className="w-12 h-12 mx-auto mb-4 text-slate-600" />
         <p className="text-slate-400">Your watchlist is empty</p>
+        <p className="text-slate-500 text-sm mt-1">Tap the ❤️ on any auction card to save it here</p>
       </Card>
     );
   }
@@ -82,7 +83,7 @@ export default function WatchlistSection({ watchlistItems, onRemove }) {
                         <span>Current: <span className="text-white font-semibold">${(auction.current_bid || auction.starting_price).toLocaleString()}</span></span>
                       </div>
                       <div className="flex items-center gap-2 text-slate-400">
-                        <Eye className="w-4 h-4" />
+                        <Heart className="w-4 h-4 fill-current text-red-400/60" />
                         <span>{auction.bid_count || 0} bids</span>
                       </div>
                     </div>
