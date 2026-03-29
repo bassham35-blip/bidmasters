@@ -6,6 +6,7 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import Checkout from './pages/Checkout';
+import CategoryLanding from './pages/CategoryLanding';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="/Checkout" element={<LayoutWrapper currentPageName="Checkout"><Checkout /></LayoutWrapper>} />
+      <Route path="/category/:category" element={<LayoutWrapper currentPageName="CategoryLanding"><CategoryLanding /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
