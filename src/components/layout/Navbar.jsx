@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Gavel, Store, User, Menu, X, LayoutGrid, ShoppingBag, Truck } from "lucide-react";
+import { Gavel, Store, User, Menu, X, LayoutGrid, ShoppingBag, Truck, BarChart2 } from "lucide-react";
 
 const navLinks = [
   { path: "/Auctions", label: "Auctions", icon: LayoutGrid },
   { path: "/DropshipCatalog", label: "Dropship", icon: Truck },
   { path: "/MyPurchases", label: "My Purchases", icon: ShoppingBag },
   { path: "/SellerDashboard", label: "Sell", icon: Store },
+  { path: "/PerformanceDashboard", label: "Analytics", icon: BarChart2 },
   { path: "/Profile", label: "Profile", icon: User }
 ];
 

@@ -9,6 +9,7 @@ import Checkout from './pages/Checkout';
 import CategoryLanding from './pages/CategoryLanding';
 import DropshipCatalog from './pages/DropshipCatalog';
 import DropshipAdmin from './pages/DropshipAdmin';
+import PerformanceDashboard from './pages/PerformanceDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
       <Route path="/category/:category" element={<LayoutWrapper currentPageName="CategoryLanding"><CategoryLanding /></LayoutWrapper>} />
       <Route path="/DropshipCatalog" element={<LayoutWrapper currentPageName="DropshipCatalog"><DropshipCatalog /></LayoutWrapper>} />
       <Route path="/DropshipAdmin" element={<LayoutWrapper currentPageName="DropshipAdmin"><DropshipAdmin /></LayoutWrapper>} />
+      <Route path="/PerformanceDashboard" element={<LayoutWrapper currentPageName="PerformanceDashboard"><PerformanceDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
