@@ -8,6 +8,7 @@ import SellerStats from "../components/seller/SellerStats";
 import SellerAuctionCard from "../components/seller/SellerAuctionCard";
 import SellerGate from "../components/seller/SellerGate";
 import SellerAnalytics from "../components/seller/SellerAnalytics";
+import TaxRateSetting from "../components/seller/TaxRateSetting";
 
 export default function SellerDashboard() {
   const [user, setUser] = useState(null);
@@ -81,6 +82,8 @@ export default function SellerDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        <TaxRateSetting user={user} onUpdate={setUser} />
 
         <SellerStats 
           activeCount={activeAuctions.length}

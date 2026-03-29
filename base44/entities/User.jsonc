@@ -43,6 +43,19 @@
     "accepted_terms": {
       "type": "boolean",
       "default": false
+    },
+    "tax_rate": {
+      "type": "number",
+      "description": "Tax rate percentage applied to sales (e.g. 8.5 for 8.5%)",
+      "default": 0
     }
-  }
+  },
+  "required": [
+    "store_name",
+    "store_description",
+    "seller_since",
+    "phone",
+    "location",
+    "avatar_url"
+  ]
 }

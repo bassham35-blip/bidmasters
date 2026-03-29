@@ -44,8 +44,17 @@ export default function Checkout() {
     }
   }, [user, auction]);
 
-  const platformFee = auction ? parseFloat((auction.current_bid * 0.03).toFixed(2)) : 0;
-  const total = auction ? parseFloat((auction.current_bid + platformFee).toFixed(2)) : 0;
+  const { data: sellerUser } = useQuery({
+    queryKey: ['seller-user', auction?.created_by],
+    queryFn: () => base44.entities.User.filter({ created_by: auction.created_by }).then(r => r[0]),
+    enabled: !!auction?.created_by,
+  });
+
+  const winningBid = auction?.current_bid || 0;
+  const platformFee = auction ? parseFloat((winningBid * 0.03).toFixed(2)) : 0;
+  const taxRate = sellerUser?.tax_rate || 0;
+  const taxAmount = auction ? parseFloat((winningBid * taxRate / 100).toFixed(2)) : 0;
+  const total = auction ? parseFloat((winningBid + platformFee + taxAmount).toFixed(2)) : 0;
 
   const handlePayment = async () => {
     if (!cardDetails.number || !cardDetails.expiry || !cardDetails.cvv || !cardDetails.name) {
@@ -157,12 +166,18 @@ export default function Checkout() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between text-slate-400">
                     <span>Winning bid</span>
-                    <span className="text-white">${auction.current_bid?.toLocaleString()}</span>
+                    <span className="text-white">${winningBid?.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-slate-400">
                     <span>Platform fee (3%)</span>
                     <span className="text-white">${platformFee.toLocaleString()}</span>
                   </div>
+                  {taxRate > 0 && (
+                    <div className="flex justify-between text-slate-400">
+                      <span>Tax ({taxRate}%)</span>
+                      <span className="text-white">${taxAmount.toLocaleString()}</span>
+                    </div>
+                  )}
                   <Separator className="bg-slate-700" />
                   <div className="flex justify-between text-base font-bold">
                     <span className="text-white">Total</span>
