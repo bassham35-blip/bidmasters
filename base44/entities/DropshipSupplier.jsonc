@@ -1,0 +1,58 @@
+{
+  "name": "DropshipSupplier",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Supplier business name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Supplier contact email"
+    },
+    "website": {
+      "type": "string",
+      "description": "Supplier website URL"
+    },
+    "description": {
+      "type": "string",
+      "description": "About the supplier"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Supplier logo image URL"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country of origin"
+    },
+    "processing_days": {
+      "type": "number",
+      "description": "Avg days to process and ship an order"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "pending"
+      ],
+      "default": "pending"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Product categories offered"
+    },
+    "commission_rate": {
+      "type": "number",
+      "description": "Platform commission % on sales"
+    }
+  },
+  "required": [
+    "name",
+    "email"
+  ]
+}

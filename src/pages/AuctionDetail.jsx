@@ -116,6 +116,8 @@ export default function AuctionDetail() {
       if (diff <= 0) {
         setIsEnded(true);
         setTimeLeft("Auction Ended");
+        // Refetch so UI reflects the ended status from the server
+        queryClient.invalidateQueries({ queryKey: ['auction', auctionId] });
         return;
       }
 

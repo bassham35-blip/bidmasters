@@ -1,0 +1,75 @@
+{
+  "name": "DropshipOrder",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "description": "ID of the dropship product"
+    },
+    "supplier_id": {
+      "type": "string",
+      "description": "ID of the supplier"
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "Email of the seller who listed this product"
+    },
+    "buyer_email": {
+      "type": "string",
+      "description": "Email of the buyer"
+    },
+    "buyer_name": {
+      "type": "string"
+    },
+    "product_title": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "unit_price": {
+      "type": "number",
+      "description": "Price paid by buyer"
+    },
+    "supplier_cost": {
+      "type": "number",
+      "description": "Cost paid to supplier"
+    },
+    "profit_margin": {
+      "type": "number",
+      "description": "Seller profit (unit_price - supplier_cost)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "refunded"
+      ],
+      "default": "pending"
+    },
+    "shipping_address": {
+      "type": "string"
+    },
+    "tracking_number": {
+      "type": "string"
+    },
+    "supplier_order_ref": {
+      "type": "string",
+      "description": "Supplier's own order reference"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "product_id",
+    "supplier_id",
+    "buyer_email",
+    "unit_price"
+  ]
+}

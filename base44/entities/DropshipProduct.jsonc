@@ -1,0 +1,80 @@
+{
+  "name": "DropshipProduct",
+  "type": "object",
+  "properties": {
+    "supplier_id": {
+      "type": "string",
+      "description": "ID of the supplier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Product image URL"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "electronics",
+        "fashion",
+        "art",
+        "collectibles",
+        "home",
+        "vehicles",
+        "jewelry",
+        "sports",
+        "other"
+      ],
+      "default": "other"
+    },
+    "supplier_price": {
+      "type": "number",
+      "description": "Cost price from supplier"
+    },
+    "suggested_retail_price": {
+      "type": "number",
+      "description": "Suggested selling price"
+    },
+    "sku": {
+      "type": "string",
+      "description": "Supplier SKU"
+    },
+    "stock_status": {
+      "type": "string",
+      "enum": [
+        "in_stock",
+        "low_stock",
+        "out_of_stock"
+      ],
+      "default": "in_stock"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    },
+    "weight_kg": {
+      "type": "number"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "supplier_id",
+    "title",
+    "supplier_price"
+  ]
+}
