@@ -13,7 +13,8 @@ import {
   ChevronDown,
   ChevronUp,
   Zap,
-  Truck
+  Truck,
+  Printer
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,6 +24,7 @@ import BoostAuctionModal from "./BoostAuctionModal";
 import AddShipmentModal from "../shipping/AddShipmentModal";
 import UpdateShipmentModal from "../shipping/UpdateShipmentModal";
 import ShippingStatusBadge from "../shipping/ShippingStatusBadge";
+import PrintShippingLabel from "../shipping/PrintShippingLabel";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -33,6 +35,7 @@ export default function SellerAuctionCard({ auction, bids, onUpdate }) {
   const [showBoostModal, setShowBoostModal] = useState(false);
   const [showAddShipment, setShowAddShipment] = useState(false);
   const [showUpdateShipment, setShowUpdateShipment] = useState(false);
+  const [showPrintLabel, setShowPrintLabel] = useState(false);
   const queryClient = useQueryClient();
 
   const isEnded = !auction.status !== 'cancelled' && (auction.status === 'ended' || new Date(auction.end_time) <= new Date());
@@ -197,15 +200,26 @@ export default function SellerAuctionCard({ auction, bids, onUpdate }) {
                       </Button>
                       {hasWinner && (
                         shipment ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setShowUpdateShipment(true)}
-                            className="bg-blue-900/20 border-blue-700/50 text-blue-300 hover:bg-blue-900/40"
-                          >
-                            <Truck className="w-4 h-4 mr-1" />
-                            Update Shipping
-                          </Button>
+                          <>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setShowUpdateShipment(true)}
+                              className="bg-blue-900/20 border-blue-700/50 text-blue-300 hover:bg-blue-900/40"
+                            >
+                              <Truck className="w-4 h-4 mr-1" />
+                              Update Shipping
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setShowPrintLabel(true)}
+                              className="bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600"
+                            >
+                              <Printer className="w-4 h-4 mr-1" />
+                              Print Label
+                            </Button>
+                          </>
                         ) : (
                           <Button
                             variant="outline"
@@ -311,6 +325,14 @@ export default function SellerAuctionCard({ auction, bids, onUpdate }) {
           onOpenChange={setShowUpdateShipment}
           shipment={shipment}
           onSuccess={refreshShipment}
+        />
+      )}
+      {shipment && (
+        <PrintShippingLabel
+          open={showPrintLabel}
+          onOpenChange={setShowPrintLabel}
+          auction={auction}
+          shipment={shipment}
         />
       )}
     </>
