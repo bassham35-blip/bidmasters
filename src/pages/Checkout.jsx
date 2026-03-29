@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, CreditCard, ShieldCheck, CheckCircle2, Lock, Trophy } from 'lucide-react';
+import { ArrowLeft, CreditCard, ShieldCheck, CheckCircle2, Lock, Trophy, MapPin } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { STATE_TAX_RATES, getTaxRateForState } from '@/lib/stateTaxRates';
 import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -17,6 +19,7 @@ export default function Checkout() {
   const [step, setStep] = useState('review'); // 'review' | 'payment' | 'success'
   const [processing, setProcessing] = useState(false);
   const [cardDetails, setCardDetails] = useState({ number: '', expiry: '', cvv: '', name: '' });
+  const [selectedState, setSelectedState] = useState('');
   const navigate = useNavigate();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -44,16 +47,11 @@ export default function Checkout() {
     }
   }, [user, auction]);
 
-  const { data: sellerUser } = useQuery({
-    queryKey: ['seller-user', auction?.created_by],
-    queryFn: () => base44.entities.User.filter({ created_by: auction.created_by }).then(r => r[0]),
-    enabled: !!auction?.created_by,
-  });
-
   const winningBid = auction?.current_bid || 0;
   const platformFee = auction ? parseFloat((winningBid * 0.03).toFixed(2)) : 0;
-  const taxRate = sellerUser?.tax_rate || 0;
-  const taxAmount = auction ? parseFloat((winningBid * taxRate / 100).toFixed(2)) : 0;
+  const stateInfo = getTaxRateForState(selectedState);
+  const taxRate = stateInfo?.rate || 0;
+  const taxAmount = selectedState ? parseFloat((winningBid * taxRate / 100).toFixed(2)) : 0;
   const total = auction ? parseFloat((winningBid + platformFee + taxAmount).toFixed(2)) : 0;
 
   const handlePayment = async () => {
@@ -172,10 +170,20 @@ export default function Checkout() {
                     <span>Platform fee (3%)</span>
                     <span className="text-white">${platformFee.toLocaleString()}</span>
                   </div>
-                  {taxRate > 0 && (
+                  {selectedState && (
                     <div className="flex justify-between text-slate-400">
-                      <span>Tax ({taxRate}%)</span>
-                      <span className="text-white">${taxAmount.toLocaleString()}</span>
+                      <span>
+                        {taxRate === 0
+                          ? `Tax (${stateInfo?.name} — no tax)`
+                          : `Sales tax (${stateInfo?.name} ${taxRate}%)`}
+                      </span>
+                      <span className="text-white">${taxAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {!selectedState && (
+                    <div className="flex justify-between text-slate-500 italic text-xs">
+                      <span>Sales tax</span>
+                      <span>Select state</span>
                     </div>
                   )}
                   <Separator className="bg-slate-700" />
@@ -199,6 +207,24 @@ export default function Checkout() {
                 <p className="text-slate-500 text-sm">This is a simulated payment — no real charges will be made.</p>
               </CardHeader>
               <CardContent className="space-y-5">
+                <div>
+                  <label className="text-slate-300 text-sm mb-2 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                    State / Territory <span className="text-slate-500 text-xs ml-1">(for sales tax)</span>
+                  </label>
+                  <Select value={selectedState} onValueChange={setSelectedState}>
+                    <SelectTrigger className="bg-slate-800 border-slate-700 text-white focus:border-amber-500">
+                      <SelectValue placeholder="Select your state…" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-700 text-white max-h-60">
+                      {Object.entries(STATE_TAX_RATES).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([code, { name, rate }]) => (
+                        <SelectItem key={code} value={code} className="text-white focus:bg-slate-700">
+                          {name} {rate === 0 ? '(no tax)' : `(${rate}%)`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div>
                   <label className="text-slate-300 text-sm mb-2 block">Cardholder Name</label>
                   <Input
