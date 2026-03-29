@@ -15,7 +15,10 @@ import {
   DollarSign,
   Calendar,
   Tag,
-  AlertCircle
+  AlertCircle,
+  CreditCard,
+  Trophy,
+  CheckCircle2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -323,14 +326,47 @@ export default function AuctionDetail() {
               )}
 
               {isEnded && (
-                <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 text-center">
-                  <p className="text-red-400 font-semibold">This auction has ended</p>
-                  {auction.current_bidder_name && (
-                    <p className="text-slate-400 text-sm mt-2">
-                      Winner: <span className="text-white">{auction.current_bidder_name}</span>
-                    </p>
+                <>
+                  {/* Winner — unpaid */}
+                  {user && auction.current_bidder === user.email && auction.status !== 'paid' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.97 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 rounded-xl p-5 text-center space-y-3"
+                    >
+                      <Trophy className="w-8 h-8 text-amber-400 mx-auto" />
+                      <p className="text-amber-300 font-bold text-lg">🎉 You Won This Auction!</p>
+                      <p className="text-slate-400 text-sm">Complete your purchase to claim your item.</p>
+                      <Link to={`/Checkout?auction_id=${auction.id}`}>
+                        <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white h-11 font-semibold text-base gap-2">
+                          <CreditCard className="w-5 h-5" />
+                          Pay ${(auction.current_bid || auction.starting_price).toLocaleString()} Now
+                        </Button>
+                      </Link>
+                    </motion.div>
                   )}
-                </div>
+
+                  {/* Winner — already paid */}
+                  {user && auction.current_bidder === user.email && auction.status === 'paid' && (
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center space-y-1">
+                      <CheckCircle2 className="w-6 h-6 text-green-400 mx-auto" />
+                      <p className="text-green-300 font-semibold">Payment Complete</p>
+                      <p className="text-slate-400 text-sm">Check your profile for shipping updates.</p>
+                    </div>
+                  )}
+
+                  {/* Non-winner ended state */}
+                  {(!user || auction.current_bidder !== user.email) && (
+                    <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 text-center">
+                      <p className="text-red-400 font-semibold">This auction has ended</p>
+                      {auction.current_bidder_name && (
+                        <p className="text-slate-400 text-sm mt-2">
+                          Winner: <span className="text-white">{auction.current_bidder_name}</span>
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
             </Card>
 
