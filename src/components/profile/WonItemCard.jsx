@@ -3,13 +3,14 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, ChevronDown, ChevronUp, Package } from "lucide-react";
+import { Trophy, ChevronDown, ChevronUp, Package, CreditCard, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import ShipmentTracker from "../shipping/ShipmentTracker";
 import ShippingStatusBadge from "../shipping/ShippingStatusBadge";
+import { Button } from "@/components/ui/button";
 
 export default function WonItemCard({ item, index }) {
   const [expanded, setExpanded] = useState(false);
@@ -64,21 +65,36 @@ export default function WonItemCard({ item, index }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
               <p className="text-sm text-slate-400">
                 Winning bid: <span className="text-white font-semibold">${(auction.current_bid || auction.starting_price).toLocaleString()}</span>
                 <span className="ml-3 text-xs">· {format(new Date(auction.end_time), "MMM d, yyyy")}</span>
               </p>
 
-              {shipment && (
-                <button
-                  onClick={() => setExpanded(v => !v)}
-                  className="flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors"
-                >
-                  {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  {expanded ? "Hide" : "Track"}
-                </button>
-              )}
+              <div className="flex items-center gap-2">
+                {/* Payment status / action */}
+                {auction.status === 'paid' ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30">
+                    <CheckCircle2 className="w-3 h-3" /> Paid
+                  </span>
+                ) : (
+                  <Link to={`/Checkout?auction_id=${auction.id}`}>
+                    <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white h-7 text-xs px-3 gap-1">
+                      <CreditCard className="w-3 h-3" /> Pay Now
+                    </Button>
+                  </Link>
+                )}
+
+                {shipment && (
+                  <button
+                    onClick={() => setExpanded(v => !v)}
+                    className="flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors"
+                  >
+                    {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    {expanded ? "Hide" : "Track"}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

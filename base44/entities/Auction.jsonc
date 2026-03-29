@@ -40,7 +40,9 @@
       "enum": [
         "active",
         "ended",
-        "cancelled"
+        "cancelled",
+        "pending_payment",
+        "paid"
       ],
       "default": "active"
     },
@@ -85,6 +87,11 @@
         "premium"
       ],
       "description": "The boost tier applied"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the winning bidder completed payment"
     }
   },
   "required": [
