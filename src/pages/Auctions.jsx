@@ -18,7 +18,8 @@ export default function Auctions() {
     priceMin: 0,
     priceMax: 10000,
     timeFilter: "all",
-    seller: ""
+    seller: "",
+    category: "all"
   });
   const [sortBy, setSortBy] = useState("ending_soon");
 
@@ -35,17 +36,17 @@ export default function Auctions() {
   // Apply filters and sorting
   const filteredAuctions = auctions
     .filter(auction => {
-      // Category filter
-      if (selectedCategory !== "all" && auction.category !== selectedCategory) {
-        return false;
-      }
+      // Category filter — from dropdown (filters.category) or pill (selectedCategory)
+      const activeCat = filters.category !== "all" ? filters.category : selectedCategory;
+      if (activeCat !== "all" && auction.category !== activeCat) return false;
 
-      // Search filter
+      // Search filter — title, description, seller name
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
         const matchesTitle = auction.title?.toLowerCase().includes(searchLower);
         const matchesDesc = auction.description?.toLowerCase().includes(searchLower);
-        if (!matchesTitle && !matchesDesc) return false;
+        const matchesSeller = auction.seller_name?.toLowerCase().includes(searchLower);
+        if (!matchesTitle && !matchesDesc && !matchesSeller) return false;
       }
 
       // Price filter
