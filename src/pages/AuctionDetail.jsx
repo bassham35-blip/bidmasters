@@ -23,6 +23,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import BidHistory from "../components/auctions/BidHistory";
+import AuctionChat from "../components/auctions/AuctionChat";
 
 const categoryColors = {
   electronics: "bg-blue-500/20 text-blue-300 border-blue-500/30",
@@ -335,6 +336,13 @@ export default function AuctionDetail() {
               </div>
               <BidHistory bids={bids} />
             </Card>
+
+            {/* Q&A Chat */}
+            <AuctionChat
+              auctionId={auctionId}
+              sellerEmail={auction.created_by}
+              user={user}
+            />
           </motion.div>
         </div>
       </div>

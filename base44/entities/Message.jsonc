@@ -1,0 +1,32 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "auction_id": {
+      "type": "string",
+      "description": "ID of the auction this message belongs to"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Email of the message sender"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Display name of the sender"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message text content"
+    },
+    "is_seller": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the sender is the auction seller"
+    }
+  },
+  "required": [
+    "auction_id",
+    "sender_email",
+    "content"
+  ]
+}
