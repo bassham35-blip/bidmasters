@@ -3,7 +3,8 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Store, TrendingUp, CheckCircle, DollarSign, BarChart2, Clock, PackageCheck } from "lucide-react";
+import { Store, TrendingUp, CheckCircle, DollarSign, BarChart2, Clock, PackageCheck, Wallet } from "lucide-react";
+import { Link } from "react-router-dom";
 import SellerStats from "../components/seller/SellerStats";
 import SellerAuctionCard from "../components/seller/SellerAuctionCard";
 import SellerGate from "../components/seller/SellerGate";
@@ -82,6 +83,14 @@ export default function SellerDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        <div className="flex justify-end">
+          <Link to="/SellerPayouts">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-colors text-sm font-medium">
+              <Wallet className="w-4 h-4" /> Payout Dashboard
+            </button>
+          </Link>
+        </div>
 
         <TaxRateSetting user={user} onUpdate={setUser} />
 

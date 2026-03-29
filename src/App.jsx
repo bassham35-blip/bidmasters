@@ -11,6 +11,7 @@ import DropshipCatalog from './pages/DropshipCatalog';
 import DropshipAdmin from './pages/DropshipAdmin';
 import PerformanceDashboard from './pages/PerformanceDashboard';
 import UserDashboard from './pages/UserDashboard';
+import SellerPayouts from './pages/SellerPayouts';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -70,6 +71,7 @@ const AuthenticatedApp = () => {
       <Route path="/DropshipAdmin" element={<LayoutWrapper currentPageName="DropshipAdmin"><DropshipAdmin /></LayoutWrapper>} />
       <Route path="/PerformanceDashboard" element={<LayoutWrapper currentPageName="PerformanceDashboard"><PerformanceDashboard /></LayoutWrapper>} />
       <Route path="/UserDashboard" element={<LayoutWrapper currentPageName="UserDashboard"><UserDashboard /></LayoutWrapper>} />
+      <Route path="/SellerPayouts" element={<LayoutWrapper currentPageName="SellerPayouts"><SellerPayouts /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

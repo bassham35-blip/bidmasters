@@ -1,0 +1,69 @@
+{
+  "name": "PayoutRequest",
+  "type": "object",
+  "properties": {
+    "seller_email": {
+      "type": "string",
+      "description": "Email of the seller requesting payout"
+    },
+    "seller_name": {
+      "type": "string",
+      "description": "Name of the seller"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Requested payout amount"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "stripe",
+        "bank_transfer"
+      ],
+      "description": "Payout method"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "paid",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Status of the payout request"
+    },
+    "stripe_email": {
+      "type": "string",
+      "description": "Stripe account email (if method is stripe)"
+    },
+    "bank_account_name": {
+      "type": "string",
+      "description": "Bank account holder name (if method is bank_transfer)"
+    },
+    "bank_account_number": {
+      "type": "string",
+      "description": "Bank account number (if method is bank_transfer)"
+    },
+    "bank_routing_number": {
+      "type": "string",
+      "description": "Bank routing number (if method is bank_transfer)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin notes on the payout"
+    },
+    "auction_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of auctions included in this payout"
+    }
+  },
+  "required": [
+    "seller_email",
+    "amount",
+    "method"
+  ]
+}
