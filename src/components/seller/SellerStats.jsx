@@ -1,9 +1,9 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, CheckCircle, DollarSign, Gavel } from "lucide-react";
+import { TrendingUp, DollarSign, Gavel, Clock, PackageCheck } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function SellerStats({ activeCount, endedCount, totalRevenue, totalBids }) {
+export default function SellerStats({ activeCount, endedCount, totalRevenue, pendingRevenue, soldCount, pendingCount, totalBids }) {
   const stats = [
     {
       label: "Active Auctions",
@@ -12,16 +12,18 @@ export default function SellerStats({ activeCount, endedCount, totalRevenue, tot
       color: "from-blue-500 to-cyan-500"
     },
     {
-      label: "Ended Auctions",
-      value: endedCount,
-      icon: CheckCircle,
-      color: "from-green-500 to-emerald-500"
+      label: "Pending Payment",
+      value: pendingCount ?? 0,
+      sub: pendingRevenue > 0 ? `$${pendingRevenue.toLocaleString()} potential` : null,
+      icon: Clock,
+      color: "from-amber-500 to-yellow-500"
     },
     {
       label: "Total Revenue",
-      value: `$${totalRevenue.toLocaleString()}`,
-      icon: DollarSign,
-      color: "from-amber-500 to-orange-500"
+      value: `$${(totalRevenue ?? 0).toLocaleString()}`,
+      sub: soldCount ? `${soldCount} item${soldCount !== 1 ? 's' : ''} sold` : null,
+      icon: PackageCheck,
+      color: "from-green-500 to-emerald-500"
     },
     {
       label: "Total Bids",
@@ -49,6 +51,7 @@ export default function SellerStats({ activeCount, endedCount, totalRevenue, tot
                 </div>
                 <p className="text-2xl font-bold text-white mb-1">{stat.value}</p>
                 <p className="text-sm text-slate-400">{stat.label}</p>
+                {stat.sub && <p className="text-xs text-slate-500 mt-1">{stat.sub}</p>}
               </CardContent>
             </Card>
           </motion.div>

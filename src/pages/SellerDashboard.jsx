@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Store, TrendingUp, CheckCircle, DollarSign, BarChart2 } from "lucide-react";
+import { Store, TrendingUp, CheckCircle, DollarSign, BarChart2, Clock, PackageCheck } from "lucide-react";
 import SellerStats from "../components/seller/SellerStats";
 import SellerAuctionCard from "../components/seller/SellerAuctionCard";
 import SellerGate from "../components/seller/SellerGate";
@@ -34,15 +34,24 @@ export default function SellerDashboard() {
     queryFn: () => base44.entities.Bid.list('-created_date', 1000),
   });
 
-  const activeAuctions = myAuctions.filter(a => 
+  const activeAuctions = myAuctions.filter(a =>
     a.status === 'active' && new Date(a.end_time) > new Date()
   );
 
-  const endedAuctions = myAuctions.filter(a => 
-    a.status === 'ended' || new Date(a.end_time) <= new Date()
+  const pendingPaymentAuctions = myAuctions.filter(a =>
+    a.status === 'pending_payment'
   );
 
-  const totalRevenue = endedAuctions.reduce((sum, a) => sum + (a.current_bid || a.starting_price), 0);
+  const soldAuctions = myAuctions.filter(a =>
+    a.status === 'paid'
+  );
+
+  const endedAuctions = myAuctions.filter(a =>
+    (a.status === 'ended' || (a.status !== 'active' && a.status !== 'cancelled' && a.status !== 'pending_payment' && a.status !== 'paid' && new Date(a.end_time) <= new Date()))
+  );
+
+  const totalRevenue = soldAuctions.reduce((sum, a) => sum + (a.current_bid || a.starting_price), 0);
+  const pendingRevenue = pendingPaymentAuctions.reduce((sum, a) => sum + (a.current_bid || a.starting_price), 0);
 
   if (!user) {
     return (
@@ -77,32 +86,39 @@ export default function SellerDashboard() {
           activeCount={activeAuctions.length}
           endedCount={endedAuctions.length}
           totalRevenue={totalRevenue}
+          pendingRevenue={pendingRevenue}
+          soldCount={soldAuctions.length}
+          pendingCount={pendingPaymentAuctions.length}
           totalBids={myAuctions.reduce((sum, a) => sum + (a.bid_count || 0), 0)}
         />
 
         <Tabs defaultValue="active" className="space-y-6">
-          <TabsList className="bg-slate-800/50 border border-slate-700/50 p-1">
-            <TabsTrigger 
-              value="active"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white"
-            >
-              Active Auctions ({activeAuctions.length})
-            </TabsTrigger>
-            <TabsTrigger 
-              value="ended"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white"
-            >
-              Ended Auctions ({endedAuctions.length})
-            </TabsTrigger>
-            <TabsTrigger 
+          <TabsList className="bg-slate-800/50 border border-slate-700/50 p-1 flex flex-wrap gap-1 h-auto">
+            {[
+              { value: "active", label: `Active (${activeAuctions.length})`, icon: TrendingUp },
+              { value: "pending", label: `Pending Payment (${pendingPaymentAuctions.length})`, icon: Clock },
+              { value: "sold", label: `Sold (${soldAuctions.length})`, icon: PackageCheck },
+              { value: "ended", label: `Ended (${endedAuctions.length})`, icon: CheckCircle },
+            ].map(({ value, label, icon: Icon }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white flex items-center gap-1.5"
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </TabsTrigger>
+            ))}
+            <TabsTrigger
               value="analytics"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white flex items-center gap-1.5"
             >
-              <BarChart2 className="w-4 h-4 mr-1" />
+              <BarChart2 className="w-4 h-4" />
               Analytics
             </TabsTrigger>
           </TabsList>
 
+          {/* Active */}
           <TabsContent value="active">
             {activeAuctions.length === 0 ? (
               <Card className="bg-slate-900/50 border-slate-700/50 p-8 text-center">
@@ -112,17 +128,61 @@ export default function SellerDashboard() {
             ) : (
               <div className="grid gap-4">
                 {activeAuctions.map(auction => (
-                  <SellerAuctionCard 
-                    key={auction.id} 
-                    auction={auction} 
-                    bids={allBids.filter(b => b.auction_id === auction.id)}
-                    onUpdate={refetch}
-                  />
+                  <SellerAuctionCard key={auction.id} auction={auction} bids={allBids.filter(b => b.auction_id === auction.id)} onUpdate={refetch} />
                 ))}
               </div>
             )}
           </TabsContent>
 
+          {/* Pending Payment */}
+          <TabsContent value="pending">
+            {pendingPaymentAuctions.length === 0 ? (
+              <Card className="bg-slate-900/50 border-slate-700/50 p-8 text-center">
+                <Clock className="w-12 h-12 mx-auto mb-4 text-slate-600" />
+                <p className="text-slate-400">No auctions awaiting payment</p>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 px-1">
+                  <Clock className="w-4 h-4 text-amber-400" />
+                  <p className="text-sm text-amber-400 font-medium">
+                    {pendingPaymentAuctions.length} auction{pendingPaymentAuctions.length !== 1 ? 's' : ''} awaiting payment — potential revenue: <span className="text-amber-300 font-bold">${pendingRevenue.toLocaleString()}</span>
+                  </p>
+                </div>
+                <div className="grid gap-4">
+                  {pendingPaymentAuctions.map(auction => (
+                    <SellerAuctionCard key={auction.id} auction={auction} bids={allBids.filter(b => b.auction_id === auction.id)} onUpdate={refetch} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Sold */}
+          <TabsContent value="sold">
+            {soldAuctions.length === 0 ? (
+              <Card className="bg-slate-900/50 border-slate-700/50 p-8 text-center">
+                <PackageCheck className="w-12 h-12 mx-auto mb-4 text-slate-600" />
+                <p className="text-slate-400">No sold auctions yet</p>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 px-1">
+                  <PackageCheck className="w-4 h-4 text-green-400" />
+                  <p className="text-sm text-green-400 font-medium">
+                    {soldAuctions.length} auction{soldAuctions.length !== 1 ? 's' : ''} sold — total revenue: <span className="text-green-300 font-bold">${totalRevenue.toLocaleString()}</span>
+                  </p>
+                </div>
+                <div className="grid gap-4">
+                  {soldAuctions.map(auction => (
+                    <SellerAuctionCard key={auction.id} auction={auction} bids={allBids.filter(b => b.auction_id === auction.id)} onUpdate={refetch} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Ended */}
           <TabsContent value="ended">
             {endedAuctions.length === 0 ? (
               <Card className="bg-slate-900/50 border-slate-700/50 p-8 text-center">
@@ -132,12 +192,7 @@ export default function SellerDashboard() {
             ) : (
               <div className="grid gap-4">
                 {endedAuctions.map(auction => (
-                  <SellerAuctionCard 
-                    key={auction.id} 
-                    auction={auction} 
-                    bids={allBids.filter(b => b.auction_id === auction.id)}
-                    onUpdate={refetch}
-                  />
+                  <SellerAuctionCard key={auction.id} auction={auction} bids={allBids.filter(b => b.auction_id === auction.id)} onUpdate={refetch} />
                 ))}
               </div>
             )}
