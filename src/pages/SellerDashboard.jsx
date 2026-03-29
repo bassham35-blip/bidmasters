@@ -84,7 +84,12 @@ export default function SellerDashboard() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-3 flex-wrap">
+          <Link to="/SellerAnalyticsDashboard">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 hover:bg-blue-500/20 transition-colors text-sm font-medium">
+              <BarChart2 className="w-4 h-4" /> Analytics Dashboard
+            </button>
+          </Link>
           <Link to="/SellerPayouts">
             <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-colors text-sm font-medium">
               <Wallet className="w-4 h-4" /> Payout Dashboard
