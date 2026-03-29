@@ -31,6 +31,16 @@ Deno.serve(async (req) => {
       const inWindow = windows.some(w => minutesLeft <= w && minutesLeft > w - 5);
       if (!inWindow) continue;
 
+      // Create in-app notification
+      await base44.asServiceRole.entities.Notification.create({
+        user_email: auction.current_bidder,
+        type: 'ending_soon',
+        title: 'Auction ending soon!',
+        message: `"${auction.title}" ends in ${minutesLeft} minutes. Current bid: $${auction.current_bid?.toFixed(2)}`,
+        auction_id: auction.id,
+        is_read: false,
+      });
+
       await base44.asServiceRole.integrations.Core.SendEmail({
         to: auction.current_bidder,
         subject: `⏰ "${auction.title}" ends in ${minutesLeft} minutes!`,

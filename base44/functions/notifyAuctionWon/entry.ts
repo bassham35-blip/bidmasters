@@ -20,6 +20,16 @@ Deno.serve(async (req) => {
     const auctionTitle = auction.title;
     const auctionId = auction.id;
 
+    // Create in-app notification for winner
+    await base44.asServiceRole.entities.Notification.create({
+      user_email: winnerEmail,
+      type: 'auction_won',
+      title: '🏆 You won an auction!',
+      message: `Congratulations! You won "${auctionTitle}" with a bid of $${finalBid?.toFixed(2)}.`,
+      auction_id: auctionId,
+      is_read: false,
+    });
+
     // Notify the winner
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: winnerEmail,

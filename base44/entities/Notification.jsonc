@@ -1,0 +1,47 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user this notification is for"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "outbid",
+        "ending_soon",
+        "shipment_update",
+        "auction_won"
+      ],
+      "description": "Type of notification"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short notification title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Full notification message"
+    },
+    "auction_id": {
+      "type": "string",
+      "description": "Related auction ID (if applicable)"
+    },
+    "shipment_id": {
+      "type": "string",
+      "description": "Related shipment ID (if applicable)"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has read this notification"
+    }
+  },
+  "required": [
+    "user_email",
+    "type",
+    "title",
+    "message"
+  ]
+}

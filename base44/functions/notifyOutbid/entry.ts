@@ -21,6 +21,16 @@ Deno.serve(async (req) => {
     const auctionTitle = auction.title;
     const auctionId = auction.id;
 
+    // Create in-app notification
+    await base44.asServiceRole.entities.Notification.create({
+      user_email: outbidEmail,
+      type: 'outbid',
+      title: "You've been outbid!",
+      message: `Someone outbid you on "${auctionTitle}". Current bid: $${newBid?.toFixed(2)}`,
+      auction_id: auctionId,
+      is_read: false,
+    });
+
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: outbidEmail,
       subject: `⚡ You've been outbid on "${auctionTitle}"`,

@@ -29,6 +29,21 @@ export default function UpdateShipmentModal({ open, onOpenChange, shipment, onSu
   const handleSave = async () => {
     setSaving(true);
     await base44.entities.Shipment.update(shipment.id, form);
+
+    // Create in-app notification for the buyer
+    if (shipment?.buyer_email) {
+      const statusLabel = STATUS_OPTIONS.find(s => s.value === form.status)?.label || form.status;
+      await base44.entities.Notification.create({
+        user_email: shipment.buyer_email,
+        type: 'shipment_update',
+        title: 'Shipment update',
+        message: `Your shipment status is now: ${statusLabel}${form.tracking_number ? ` (Tracking: ${form.tracking_number})` : ''}.`,
+        auction_id: shipment.auction_id,
+        shipment_id: shipment.id,
+        is_read: false,
+      });
+    }
+
     setSaving(false);
     onSuccess?.();
     onOpenChange(false);

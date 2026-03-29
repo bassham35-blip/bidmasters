@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Gavel, Store, User, Menu, X, LayoutGrid, ShoppingBag, Truck, BarChart2, LayoutDashboard } from "lucide-react";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 const navLinks = [
   { path: "/Auctions", label: "Auctions", icon: LayoutGrid },
@@ -66,13 +67,21 @@ export default function Navbar() {
             )}
           </div>
 
+          {/* Bell */}
+          <div className="hidden sm:block">
+            {user && <NotificationBell userEmail={user.email} />}
+          </div>
+
           {/* Mobile hamburger */}
+          <div className="flex items-center gap-1 sm:hidden">
+            {user && <NotificationBell userEmail={user.email} />}
           <button
-            className="sm:hidden text-slate-400 hover:text-white"
+            className="text-slate-400 hover:text-white"
             onClick={() => setMenuOpen(o => !o)}
           >
             {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
