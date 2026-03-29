@@ -51,9 +51,9 @@ export default function AuctionCard({ auction, index = 0, currentUserEmail }) {
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
       if (days > 0) {
-        setTimeLeft(`${days}d ${hours}h`);
+        setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
       } else if (hours > 0) {
-        setTimeLeft(`${hours}h ${minutes}m`);
+        setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
       } else {
         setTimeLeft(`${minutes}m ${seconds}s`);
       }
