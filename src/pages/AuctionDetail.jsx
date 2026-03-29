@@ -24,6 +24,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import BidHistory from "../components/auctions/BidHistory";
 import AuctionChat from "../components/auctions/AuctionChat";
+import SellerRating from "../components/reviews/SellerRating";
 
 const categoryColors = {
   electronics: "bg-blue-500/20 text-blue-300 border-blue-500/30",
@@ -221,7 +222,10 @@ export default function AuctionDetail() {
               <div className="p-6 space-y-4">
                 <div className="flex items-center gap-3 text-slate-400">
                   <User className="w-4 h-4" />
-                  <span className="text-sm">Seller: <span className="text-white">{auction.seller_name || "Anonymous"}</span></span>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm">Seller: <span className="text-white">{auction.seller_name || "Anonymous"}</span></span>
+                    <SellerRating sellerEmail={auction.created_by} size="sm" />
+                  </div>
                 </div>
                 <div className="flex items-center gap-3 text-slate-400">
                   <Calendar className="w-4 h-4" />

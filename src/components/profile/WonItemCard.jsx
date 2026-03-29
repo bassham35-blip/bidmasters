@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, ChevronDown, ChevronUp, Package, CreditCard, CheckCircle2 } from "lucide-react";
+import { Trophy, ChevronDown, ChevronUp, Package, CreditCard, CheckCircle2, Star } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -11,10 +11,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import ShipmentTracker from "../shipping/ShipmentTracker";
 import ShippingStatusBadge from "../shipping/ShippingStatusBadge";
 import { Button } from "@/components/ui/button";
+import LeaveReviewModal from "../reviews/LeaveReviewModal";
 
-export default function WonItemCard({ item, index }) {
+export default function WonItemCard({ item, index, user }) {
   const [expanded, setExpanded] = useState(false);
+  const [showReview, setShowReview] = useState(false);
   const auction = item.auction;
+
+  const { data: myReviews = [], refetch: refetchReview } = useQuery({
+    queryKey: ['my-review', auction?.id, user?.email],
+    queryFn: () => base44.entities.Review.filter({ auction_id: auction.id, buyer_email: user.email }),
+    enabled: !!auction?.id && !!user?.email,
+  });
+  const alreadyReviewed = myReviews.length > 0;
 
   const { data: shipments = [] } = useQuery({
     queryKey: ['shipment', auction?.id],
@@ -85,6 +94,20 @@ export default function WonItemCard({ item, index }) {
                   </Link>
                 )}
 
+                {/* Rate seller (only after payment) */}
+                {auction.status === 'paid' && (
+                  alreadyReviewed ? (
+                    <span className="inline-flex items-center gap-1 text-xs text-amber-400">
+                      <Star className="w-3 h-3 fill-amber-400" /> Reviewed
+                    </span>
+                  ) : (
+                    <Button size="sm" variant="outline" onClick={() => setShowReview(true)}
+                      className="border-amber-500/40 text-amber-400 hover:bg-amber-500/10 h-7 text-xs px-3 gap-1">
+                      <Star className="w-3 h-3" /> Rate Seller
+                    </Button>
+                  )
+                )}
+
                 {shipment && (
                   <button
                     onClick={() => setExpanded(v => !v)}
@@ -98,6 +121,16 @@ export default function WonItemCard({ item, index }) {
             </div>
           </div>
         </div>
+
+        {showReview && (
+          <LeaveReviewModal
+            open={showReview}
+            onClose={() => setShowReview(false)}
+            auction={auction}
+            user={user}
+            onReviewed={refetchReview}
+          />
+        )}
 
         <AnimatePresence>
           {expanded && shipment && (

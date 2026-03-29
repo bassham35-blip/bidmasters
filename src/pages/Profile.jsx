@@ -219,7 +219,7 @@ export default function Profile() {
                 ) : (
                   <div className="space-y-3">
                     {wonItems.map((item, index) => (
-                      <WonItemCard key={item.bid.id} item={item} index={index} />
+                      <WonItemCard key={item.bid.id} item={item} index={index} user={user} />
                     ))}
                   </div>
                 )}

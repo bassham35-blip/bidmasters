@@ -1,0 +1,36 @@
+{
+  "name": "Review",
+  "type": "object",
+  "properties": {
+    "auction_id": {
+      "type": "string",
+      "description": "ID of the auction this review is for"
+    },
+    "seller_email": {
+      "type": "string",
+      "description": "Email of the seller being reviewed"
+    },
+    "buyer_email": {
+      "type": "string",
+      "description": "Email of the buyer leaving the review"
+    },
+    "buyer_name": {
+      "type": "string",
+      "description": "Display name of the buyer"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Star rating 1\u20135"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Written review text"
+    }
+  },
+  "required": [
+    "auction_id",
+    "seller_email",
+    "buyer_email",
+    "rating"
+  ]
+}
