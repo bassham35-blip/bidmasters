@@ -18,7 +18,8 @@ import {
   AlertCircle,
   CreditCard,
   Trophy,
-  CheckCircle2
+  CheckCircle2,
+  Radio
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -26,6 +27,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import BidHistory from "../components/auctions/BidHistory";
+import LiveStreamPlayer from "../components/auctions/LiveStreamPlayer";
 import AuctionChat from "../components/auctions/AuctionChat";
 import SellerRating from "../components/reviews/SellerRating";
 
@@ -204,11 +206,18 @@ export default function AuctionDetail() {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Image */}
+          {/* Left Column - Image / Stream */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
+            {/* Live stream player */}
+            {auction.stream_url && (
+              <div className="mb-4">
+                <LiveStreamPlayer streamUrl={auction.stream_url} />
+              </div>
+            )}
+
             <Card className="bg-slate-900 border-slate-700 overflow-hidden">
               <div className="aspect-square relative">
                 <img
@@ -252,7 +261,15 @@ export default function AuctionDetail() {
           >
             {/* Title and Description */}
             <Card className="bg-slate-900 border-slate-700 p-6">
-              <h1 className="text-3xl font-bold text-white mb-4">{auction.title}</h1>
+              <div className="flex items-start gap-3 mb-4">
+                <h1 className="text-3xl font-bold text-white flex-1">{auction.title}</h1>
+                {auction.stream_url && !isEnded && (
+                  <span className="flex items-center gap-1.5 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shrink-0 mt-1">
+                    <Radio className="w-3 h-3" />
+                    LIVE
+                  </span>
+                )}
+              </div>
               <p className="text-slate-400 leading-relaxed">{auction.description || "No description provided."}</p>
             </Card>
 

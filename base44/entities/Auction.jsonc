@@ -14,6 +14,10 @@
       "type": "string",
       "description": "Main image of the item"
     },
+    "stream_url": {
+      "type": "string",
+      "description": "Live stream URL (YouTube, Twitch, etc.) for video livestream auctions"
+    },
     "starting_price": {
       "type": "number",
       "description": "Starting bid price"
