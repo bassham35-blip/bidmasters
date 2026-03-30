@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from "@/api/base44Client";
 import { Bell, X, Gavel, Clock, Package, Trophy } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 
 const TYPE_CONFIG = {
   outbid: { icon: Gavel, color: "text-red-400", bg: "bg-red-400/10" },
@@ -15,6 +16,7 @@ export default function NotificationBell({ userEmail }) {
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!userEmail) return;
@@ -22,7 +24,19 @@ export default function NotificationBell({ userEmail }) {
     const unsub = base44.entities.Notification.subscribe((event) => {
       if (event.type === 'create' && event.data?.user_email === userEmail) {
         setNotifications(prev => [event.data, ...prev]);
-        // Show a toast-like flash on the bell
+
+        const n = event.data;
+        if (n.type === 'outbid' && n.auction_id) {
+          toast(n.title, {
+            description: n.message,
+            duration: 8000,
+            action: {
+              label: 'Bid Again →',
+              onClick: () => navigate(`/AuctionDetail?id=${n.auction_id}`),
+            },
+            icon: <Gavel className="w-4 h-4 text-red-400" />,
+          });
+        }
       } else if (event.type === 'update') {
         setNotifications(prev => prev.map(n => n.id === event.id ? event.data : n));
       } else if (event.type === 'delete') {
