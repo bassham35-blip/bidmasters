@@ -31,7 +31,7 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
     image_url: "",
     starting_price: "",
     category: "other",
-    duration: "24",
+    duration: "0.00833",
     startType: "now",
     start_time: ""
   });
@@ -62,7 +62,7 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
     const isScheduled = formData.startType === "scheduled" && formData.start_time;
     const startTime = isScheduled ? new Date(formData.start_time) : new Date();
     const endTime = new Date(startTime);
-    endTime.setHours(endTime.getHours() + parseInt(formData.duration));
+    endTime.setTime(endTime.getTime() + parseFloat(formData.duration) * 60 * 60 * 1000);
 
     await base44.entities.Auction.create({
       title: formData.title,
@@ -80,12 +80,12 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
 
     toast.success("Auction created successfully!");
     setFormData({
-      title: "",
-      description: "",
-      image_url: "",
-      starting_price: "",
-      category: "other",
-      duration: "24",
+    title: "",
+    description: "",
+    image_url: "",
+    starting_price: "",
+    category: "other",
+    duration: "0.00833",
       startType: "now",
       start_time: ""
     });
@@ -221,6 +221,9 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-slate-800 border-slate-700">
+                <SelectItem value="0.00833" className="text-white hover:bg-slate-700">⚡ 30 seconds</SelectItem>
+                <SelectItem value="0.0833" className="text-white hover:bg-slate-700">5 minutes</SelectItem>
+                <SelectItem value="0.5" className="text-white hover:bg-slate-700">30 minutes</SelectItem>
                 <SelectItem value="1" className="text-white hover:bg-slate-700">1 hour</SelectItem>
                 <SelectItem value="6" className="text-white hover:bg-slate-700">6 hours</SelectItem>
                 <SelectItem value="12" className="text-white hover:bg-slate-700">12 hours</SelectItem>
@@ -263,7 +266,7 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
             )}
             {formData.startType === "scheduled" && formData.start_time && (
               <p className="text-xs text-slate-400">
-                Auction will go live on {new Date(formData.start_time).toLocaleString()} and run for {formData.duration} hours.
+                Auction will go live on {new Date(formData.start_time).toLocaleString()} and run for {parseFloat(formData.duration) < 1 ? `${Math.round(parseFloat(formData.duration) * 60)} minutes` : `${formData.duration} hours`}.
               </p>
             )}
           </div>
