@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Plus, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
@@ -22,6 +22,7 @@ export default function Auctions() {
     category: "all"
   });
   const [sortBy, setSortBy] = useState("ending_soon");
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => setUser(null));
@@ -32,6 +33,22 @@ export default function Auctions() {
     queryFn: () => base44.entities.Auction.list(),
     initialData: []
   });
+
+  // Real-time subscription: reflect bid/price changes on cards instantly
+  useEffect(() => {
+    const unsub = base44.entities.Auction.subscribe((event) => {
+      if (event.type === 'update') {
+        queryClient.setQueryData(['auctions'], (prev = []) =>
+          prev.map(a => a.id === event.id ? event.data : a)
+        );
+      } else if (event.type === 'create') {
+        queryClient.setQueryData(['auctions'], (prev = []) => [event.data, ...prev]);
+      } else if (event.type === 'delete') {
+        queryClient.setQueryData(['auctions'], (prev = []) => prev.filter(a => a.id !== event.id));
+      }
+    });
+    return unsub;
+  }, [queryClient]);
 
   // Apply filters and sorting
   const filteredAuctions = auctions

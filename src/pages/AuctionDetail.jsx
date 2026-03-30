@@ -78,9 +78,34 @@ export default function AuctionDetail() {
   const { data: bids = [] } = useQuery({
     queryKey: ['bids', auctionId],
     queryFn: () => base44.entities.Bid.filter({ auction_id: auctionId }, '-created_date'),
-    enabled: !!auctionId,
-    refetchInterval: 5000
+    enabled: !!auctionId
   });
+
+  // Real-time subscription: update auction data and bids instantly for all users
+  useEffect(() => {
+    if (!auctionId) return;
+
+    const unsubAuction = base44.entities.Auction.subscribe((event) => {
+      if (event.id !== auctionId) return;
+      if (event.type === 'update' || event.type === 'create') {
+        queryClient.setQueryData(['auction', auctionId], event.data);
+      }
+    });
+
+    const unsubBids = base44.entities.Bid.subscribe((event) => {
+      if (event.data?.auction_id !== auctionId) return;
+      if (event.type === 'create') {
+        queryClient.setQueryData(['bids', auctionId], (prev = []) =>
+          [event.data, ...prev.filter(b => b.id !== event.data.id)]
+        );
+      }
+    });
+
+    return () => {
+      unsubAuction();
+      unsubBids();
+    };
+  }, [auctionId, queryClient]);
 
   const placeBidMutation = useMutation({
     mutationFn: async (amount) => {
