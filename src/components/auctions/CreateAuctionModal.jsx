@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { base44 } from "@/api/base44Client";
-import { Upload, Loader2, Clock, X, ImageIcon, Radio } from "lucide-react";
+import { Upload, Loader2, Clock, X, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
 const categories = [
@@ -29,7 +29,6 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
     title: "",
     description: "",
     image_url: "",
-    stream_url: "",
     starting_price: "",
     category: "other",
     duration: "0.00833",
@@ -69,7 +68,6 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
       title: formData.title,
       description: formData.description,
       image_url: formData.image_url,
-      stream_url: formData.stream_url || null,
       starting_price: parseFloat(formData.starting_price),
       current_bid: parseFloat(formData.starting_price),
       category: formData.category,
@@ -85,7 +83,6 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
       title: "",
       description: "",
       image_url: "",
-      stream_url: "",
       starting_price: "",
       category: "other",
       duration: "0.00833",
@@ -177,20 +174,6 @@ export default function CreateAuctionModal({ open, onOpenChange, user, onSuccess
                 )}
               </label>
             )}
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-slate-300 flex items-center gap-1.5">
-              <Radio className="w-3.5 h-3.5 text-red-400" />
-              Live Stream URL <span className="text-slate-500 font-normal">(optional)</span>
-            </Label>
-            <Input
-              value={formData.stream_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, stream_url: e.target.value }))}
-              placeholder="YouTube or Twitch URL (e.g. youtube.com/watch?v=...)"
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-red-500"
-            />
-            <p className="text-xs text-slate-500">Paste a YouTube or Twitch link to stream live video alongside your auction.</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

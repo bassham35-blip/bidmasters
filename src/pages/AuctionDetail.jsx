@@ -27,7 +27,8 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import BidHistory from "../components/auctions/BidHistory";
-import LiveStreamPlayer from "../components/auctions/LiveStreamPlayer";
+import LiveBroadcaster from "../components/auctions/LiveBroadcaster";
+import LiveViewer from "../components/auctions/LiveViewer";
 import AuctionChat from "../components/auctions/AuctionChat";
 import SellerRating from "../components/reviews/SellerRating";
 
@@ -211,10 +212,14 @@ export default function AuctionDetail() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            {/* Live stream player */}
-            {auction.stream_url && (
+            {/* Live stream — broadcaster or viewer */}
+            {!isEnded && (
               <div className="mb-4">
-                <LiveStreamPlayer streamUrl={auction.stream_url} />
+                {user && auction.created_by === user.email ? (
+                  <LiveBroadcaster auctionId={auctionId} />
+                ) : (
+                  <LiveViewer auctionId={auctionId} />
+                )}
               </div>
             )}
 
@@ -263,7 +268,7 @@ export default function AuctionDetail() {
             <Card className="bg-slate-900 border-slate-700 p-6">
               <div className="flex items-start gap-3 mb-4">
                 <h1 className="text-3xl font-bold text-white flex-1">{auction.title}</h1>
-                {auction.stream_url && !isEnded && (
+                {!isEnded && (
                   <span className="flex items-center gap-1.5 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shrink-0 mt-1">
                     <Radio className="w-3 h-3" />
                     LIVE
