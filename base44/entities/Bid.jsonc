@@ -1,0 +1,26 @@
+{
+  "name": "Bid",
+  "type": "object",
+  "properties": {
+    "auction_id": {
+      "type": "string",
+      "description": "ID of the auction"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Bid amount"
+    },
+    "bidder_name": {
+      "type": "string",
+      "description": "Name of the bidder"
+    },
+    "bidder_email": {
+      "type": "string",
+      "description": "Email of the bidder"
+    }
+  },
+  "required": [
+    "auction_id",
+    "amount"
+  ]
+}
